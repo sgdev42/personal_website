@@ -1,0 +1,235 @@
+:root {
+  --bg: #f2efe8;
+  --bg-elevated: #fffdf8;
+  --ink: #1e1f25;
+  --ink-soft: #4f5360;
+  --accent: #096b72;
+  --accent-2: #b93e2e;
+  --line: #d5d0c5;
+  --shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(9, 107, 114, 0.2), transparent 30%),
+    radial-gradient(circle at 90% 0%, rgba(185, 62, 46, 0.15), transparent 28%),
+    linear-gradient(160deg, #f6f4ef 0%, #ece7dd 50%, #f8f4eb 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  width: min(1100px, 92vw);
+  margin: 2rem auto 3rem;
+  flex: 1;
+}
+
+.site-header,
+.site-footer {
+  width: min(1100px, 92vw);
+  margin: 1rem auto;
+}
+
+.site-header {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0.8rem;
+  z-index: 3;
+}
+
+.brand {
+  display: inline-grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(140deg, var(--accent), #0f8790);
+}
+
+.menu-toggle {
+  display: none;
+  border: 1px solid var(--line);
+  background: var(--bg-elevated);
+  color: var(--ink);
+  border-radius: 10px;
+  padding: 0.4rem 0.7rem;
+  font: inherit;
+}
+
+.site-nav {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.site-nav a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 0.45rem 0.65rem;
+  border-radius: 10px;
+}
+
+.site-nav a[aria-current="page"],
+.site-nav a:hover {
+  background: #ebe6db;
+  color: var(--ink);
+}
+
+.panel {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 1.4rem;
+  box-shadow: var(--shadow);
+}
+
+.hero h1,
+h1,
+h2 {
+  font-family: "Fraunces", Georgia, "Times New Roman", serif;
+  margin: 0.25rem 0 0.8rem;
+  line-height: 1.15;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 4vw, 3.3rem);
+}
+
+h1 {
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+}
+
+h2 {
+  font-size: 1.4rem;
+}
+
+p {
+  margin: 0.25rem 0 1rem;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--accent-2);
+}
+
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.button {
+  display: inline-block;
+  padding: 0.65rem 0.95rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #fff;
+  background: linear-gradient(130deg, var(--accent), #0e828b);
+  font-weight: 600;
+}
+
+.button-ghost {
+  color: var(--ink);
+  background: #ebe6db;
+}
+
+.text-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.text-link:hover {
+  text-decoration: underline;
+}
+
+.grid {
+  margin-top: 1.15rem;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tags {
+  font-size: 0.87rem;
+}
+
+.site-footer {
+  text-align: center;
+  color: var(--ink-soft);
+  margin-bottom: 1.4rem;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .menu-toggle {
+    display: inline-flex;
+  }
+
+  .site-nav {
+    position: absolute;
+    inset: calc(100% + 0.5rem) 0 auto 0;
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 0.6rem;
+    margin: 0 0.25rem;
+    display: none;
+    flex-direction: column;
+  }
+
+  .site-nav.is-open {
+    display: flex;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
