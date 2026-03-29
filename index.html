@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Personal website for sharing projects, writing, and contact information."
+      content="Simon Guo - software engineer focused on product-oriented development. View projects, skills, and contact details."
     />
     <title>Simon Guo | Personal Website</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./assets/css/styles.css" />
@@ -30,61 +30,182 @@
           Menu
         </button>
         <nav id="site-nav" class="site-nav">
-          <a href="./index.html" aria-current="page">Home</a>
-          <a href="./pages/about.html">About</a>
-          <a href="./pages/projects.html">Projects</a>
-          <a href="./pages/blog.html">Blog</a>
-          <a href="./pages/contact.html">Contact</a>
+          <a href="#hero" aria-current="page">Home</a>
+          <a href="#projects">Projects</a>
+          <a href="#about">About</a>
+          <a href="#skills">Skills</a>
+          <a href="#contact">Contact</a>
         </nav>
       </div>
     </header>
 
     <main>
-      <section class="hero panel reveal">
+      <section id="hero" class="hero hero-centered panel reveal">
         <p class="eyebrow">Simon Guo</p>
-        <h1>
-          Building thoughtful software and sharing what I learn along the way.
-        </h1>
+        <h1>Simon Guo</h1>
         <p>
-          Software engineer focused on practical systems, clean implementation,
-          and steady iteration from idea to delivery.
+          I build product-focused web applications using JavaScript, TypeScript,
+          and AI tooling.
         </p>
         <div class="hero-actions">
-          <a class="button" href="./pages/projects.html">View Projects</a>
-          <a class="button button-ghost" href="./pages/blog.html">View Blog</a>
+          <a class="button" href="#projects">View Projects</a>
+          <a class="button button-ghost" href="#contact">Contact Me</a>
         </div>
       </section>
 
-      <section class="grid reveal">
-        <article class="panel">
-          <h2>About</h2>
-          <p>
-            Background, technical interests, and how I approach engineering work.
-          </p>
-          <a class="text-link" href="./pages/about.html">Read more</a>
-        </article>
-        <article class="panel">
-          <h2>Projects</h2>
-          <p>
-            Selected work with context, technical scope, and implementation details.
-          </p>
-          <a class="text-link" href="./pages/projects.html">Explore projects</a>
-        </article>
-        <article class="panel">
-          <h2>Blog</h2>
-          <p>
-            Small thought cards for notes on ideas, learnings, and experiments.
-          </p>
-          <a class="text-link" href="./pages/blog.html">Read blog cards</a>
-        </article>
-        <article class="panel">
-          <h2>Contact</h2>
-          <p>
-            Reach out for collaboration, project discussion, or technical exchange.
-          </p>
-          <a class="text-link" href="./pages/contact.html">Get in touch</a>
-        </article>
+      <section id="projects" class="section-block reveal">
+        <p class="eyebrow">Projects</p>
+        <h2>Featured Work</h2>
+        <div class="grid">
+          <article class="card project-card">
+            <h3 class="project-card__title">Personal Website</h3>
+            <p class="project-card__desc">
+              Recruiter-focused personal site built for fast scanning and clear
+              call-to-action paths.
+            </p>
+            <div class="project-card__items">
+              <div class="project-card__item">
+                <p class="project-card__label">Problem</p>
+                <p class="project-card__value">A basic portfolio was not converting visitors into interview conversations.</p>
+              </div>
+              <div class="project-card__item">
+                <p class="project-card__label">Solution</p>
+                <p class="project-card__value">Redesigned into a single-page narrative with clear CTA flow and bilingual support.</p>
+              </div>
+              <div class="project-card__item">
+                <p class="project-card__label">Tech Stack</p>
+                <div class="project-card__tags">
+                  <span>HTML</span>
+                  <span>CSS</span>
+                  <span>JavaScript</span>
+                  <span>GitHub Pages</span>
+                  <span>i18n</span>
+                </div>
+              </div>
+              <div class="project-card__item">
+                <p class="project-card__label">Result</p>
+                <p class="project-card__value">Improved messaging clarity and created a scalable framework for future portfolio updates.</p>
+              </div>
+            </div>
+            <div class="project-card__links">
+              <a class="text-link" href="https://sgdev42.github.io/personal_website/" target="_blank" rel="noreferrer">Live</a>
+              <a class="text-link" href="https://github.com/sgdev42/personal_website" target="_blank" rel="noreferrer">GitHub</a>
+            </div>
+          </article>
+          <article class="card project-card">
+            <h3 class="project-card__title">Automation Utility (Template)</h3>
+            <p class="project-card__desc">
+              Placeholder project card to preserve reusable structure.
+            </p>
+            <div class="project-card__items">
+              <div class="project-card__item">
+                <p class="project-card__label">Problem</p>
+                <p class="project-card__value">Manual repetitive tasks slowed delivery speed and introduced errors.</p>
+              </div>
+              <div class="project-card__item">
+                <p class="project-card__label">Solution</p>
+                <p class="project-card__value">Built a small automation script to standardize repeat workflows.</p>
+              </div>
+              <div class="project-card__item">
+                <p class="project-card__label">Tech Stack</p>
+                <div class="project-card__tags">
+                  <span>Python</span>
+                  <span>CLI</span>
+                  <span>JSON</span>
+                </div>
+              </div>
+              <div class="project-card__item">
+                <p class="project-card__label">Result</p>
+                <p class="project-card__value">Learned how to reduce manual effort and improve repeatable developer workflows.</p>
+              </div>
+            </div>
+            <div class="project-card__links">
+              <a class="text-link" href="https://github.com/sgdev42" target="_blank" rel="noreferrer">Live</a>
+              <a class="text-link" href="https://github.com/sgdev42" target="_blank" rel="noreferrer">GitHub</a>
+            </div>
+          </article>
+          <article class="card project-card">
+            <h3 class="project-card__title">API Integration Project (Template)</h3>
+            <p class="project-card__desc">
+              Placeholder card for future external-service integration work.
+            </p>
+            <div class="project-card__items">
+              <div class="project-card__item">
+                <p class="project-card__label">Problem</p>
+                <p class="project-card__value">Needed a reliable way to combine external data into a usable product surface.</p>
+              </div>
+              <div class="project-card__item">
+                <p class="project-card__label">Solution</p>
+                <p class="project-card__value">Created a modular API layer with clear request, error, and response handling.</p>
+              </div>
+              <div class="project-card__item">
+                <p class="project-card__label">Tech Stack</p>
+                <div class="project-card__tags">
+                  <span>TypeScript</span>
+                  <span>REST API</span>
+                  <span>Node.js</span>
+                </div>
+              </div>
+              <div class="project-card__item">
+                <p class="project-card__label">Result</p>
+                <p class="project-card__value">Learned to design cleaner integration boundaries and more debuggable data pipelines.</p>
+              </div>
+            </div>
+            <div class="project-card__links">
+              <a class="text-link" href="https://github.com/sgdev42" target="_blank" rel="noreferrer">Live</a>
+              <a class="text-link" href="https://github.com/sgdev42" target="_blank" rel="noreferrer">GitHub</a>
+            </div>
+          </article>
+        </div>
       </section>
+
+      <section id="about" class="section-block panel reveal">
+        <p class="eyebrow">About</p>
+        <h2>Short Intro</h2>
+        <p>
+          I enjoy building practical software that helps real users and teams
+          move faster. I care about clean implementation, readable code, and
+          shipping with clear product impact.
+        </p>
+      </section>
+
+      <section id="skills" class="section-block panel reveal">
+        <p class="eyebrow">Skills / Tech</p>
+        <h2>Core Stack</h2>
+        <div class="skills-list">
+          <span>JavaScript</span>
+          <span>TypeScript</span>
+          <span>React</span>
+          <span>Node.js</span>
+          <span>REST APIs</span>
+          <span>GitHub Actions</span>
+          <span>Testing</span>
+          <span>Prompt Engineering</span>
+        </div>
+      </section>
+
+      <section id="contact" class="section-block panel reveal">
+        <p class="eyebrow">Contact</p>
+        <h2>Let’s Connect</h2>
+        <p>
+          If you are hiring for a software engineering role, I would love to
+          connect and share how I can contribute.
+        </p>
+        <div class="hero-actions">
+          <a class="button" href="mailto:simonguo2021@outlook.com">Contact Me</a>
+          <a
+            class="button button-ghost"
+            href="https://www.linkedin.com/in/yguo97/"
+            target="_blank"
+            rel="noreferrer"
+            >View Resume</a
+          >
+        </div>
+        <p class="contact-inline">
+          Email: <a class="text-link" href="mailto:simonguo2021@outlook.com">simonguo2021@outlook.com</a>
+        </p>
+      </section>
+
     </main>
 
     <footer class="site-footer">
