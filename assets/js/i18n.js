@@ -1,170 +1,22 @@
 (function () {
   const STORAGE_LANG_KEY = "sg_site_language";
-  const STORAGE_CACHE_KEY = "sg_site_translation_cache_v1";
-  const SOURCE_LANG = "en";
-  const SUPPORTED_LANGUAGES = ["en", "zh-CN", "fr", "ja"];
+  const STORAGE_CACHE_KEY = "sg_site_translation_cache_v2";
+  const SUPPORTED_LANGUAGES = ["en", "zh-CN"];
   const TRANSLATION_ENDPOINT =
     window.TRANSLATION_ENDPOINT || "https://translate.argosopentech.com/translate";
-  const shouldTranslateSelector = [
-    "h1",
-    "h2",
-    "h3",
-    "p",
-    "small",
-    "label",
-    "button",
-    "a",
-    "title",
-    "meta[name='description']",
-  ].join(", ");
+  const ATTRIBUTE_NAMES = ["placeholder", "aria-label", "title", "content"];
+  const ATTR_SELECTOR =
+    "[placeholder],[aria-label],[title],meta[name='description']";
 
   const languageSelect = document.querySelector("#language-switch");
   if (!languageSelect) {
     return;
   }
 
-  const fallbackDictionary = {
-    "Home": {
-      "zh-CN": "首页",
-      fr: "Accueil",
-      ja: "ホーム",
-    },
-    "About": {
-      "zh-CN": "关于",
-      fr: "A propos",
-      ja: "自己紹介",
-    },
-    "Projects": {
-      "zh-CN": "项目",
-      fr: "Projets",
-      ja: "プロジェクト",
-    },
-    "Blog": {
-      "zh-CN": "博客",
-      fr: "Blog",
-      ja: "ブログ",
-    },
-    "Contact": {
-      "zh-CN": "联系",
-      fr: "Contact",
-      ja: "連絡先",
-    },
-    "Menu": {
-      "zh-CN": "菜单",
-      fr: "Menu",
-      ja: "メニュー",
-    },
-    "View Projects": {
-      "zh-CN": "查看项目",
-      fr: "Voir les projets",
-      ja: "プロジェクトを見る",
-    },
-    "View Blog": {
-      "zh-CN": "浏览博客卡片",
-      fr: "Voir le blog",
-      ja: "ブログを見る",
-    },
-    "Read more": {
-      "zh-CN": "继续阅读",
-      fr: "Lire plus",
-      ja: "続きを読む",
-    },
-    "Explore projects": {
-      "zh-CN": "查看项目",
-      fr: "Explorer les projets",
-      ja: "プロジェクトを見る",
-    },
-    "Read blog cards": {
-      "zh-CN": "阅读博客卡片",
-      fr: "Lire les cartes du blog",
-      ja: "ブログカードを読む",
-    },
-    "Get in touch": {
-      "zh-CN": "联系我",
-      fr: "Me contacter",
-      ja: "連絡する",
-    },
-    "Selected Work": {
-      "zh-CN": "精选项目",
-      fr: "Selection de projets",
-      ja: "主な実績",
-    },
-    "Coming Soon": {
-      "zh-CN": "即将更新",
-      fr: "Bientot",
-      ja: "近日公開",
-    },
-    "In Progress": {
-      "zh-CN": "进行中",
-      fr: "En cours",
-      ja: "進行中",
-    },
-    "Repo": {
-      "zh-CN": "仓库",
-      fr: "Depot",
-      ja: "リポジトリ",
-    },
-    "Thought Cards": {
-      "zh-CN": "想法卡片",
-      fr: "Cartes d'idees",
-      ja: "思考カード",
-    },
-    "Create a Card": {
-      "zh-CN": "创建卡片",
-      fr: "Creer une carte",
-      ja: "カードを作成",
-    },
-    "Cards": {
-      "zh-CN": "卡片列表",
-      fr: "Cartes",
-      ja: "カード一覧",
-    },
-    "Title": {
-      "zh-CN": "标题",
-      fr: "Titre",
-      ja: "タイトル",
-    },
-    "Thought": {
-      "zh-CN": "内容",
-      fr: "Idee",
-      ja: "内容",
-    },
-    "Tags (comma separated)": {
-      "zh-CN": "标签（用逗号分隔）",
-      fr: "Etiquettes (separees par des virgules)",
-      ja: "タグ（カンマ区切り）",
-    },
-    "Add Card": {
-      "zh-CN": "添加卡片",
-      fr: "Ajouter",
-      ja: "カードを追加",
-    },
-    "Remove": {
-      "zh-CN": "删除",
-      fr: "Supprimer",
-      ja: "削除",
-    },
-    "Who I Am": {
-      "zh-CN": "我是谁",
-      fr: "Qui je suis",
-      ja: "私について",
-    },
-    "Current Focus": {
-      "zh-CN": "当前关注",
-      fr: "Axes actuels",
-      ja: "現在の注力領域",
-    },
-    "Core Skills": {
-      "zh-CN": "核心能力",
-      fr: "Competences principales",
-      ja: "主要スキル",
-    },
-    "Outside Work": {
-      "zh-CN": "工作之外",
-      fr: "En dehors du travail",
-      ja: "仕事以外",
-    },
-  };
+  const textOriginalMap = new WeakMap();
+  const attrOriginalMap = new WeakMap();
+  const pendingMap = new Map();
+  let warnedUnavailable = false;
 
   const currentLanguage = getInitialLanguage();
   languageSelect.value = currentLanguage;
@@ -176,6 +28,7 @@
     await applyLanguage(nextLanguage);
   });
 
+  window.__applySiteLanguage = () => applyLanguage(languageSelect.value);
   applyLanguage(currentLanguage);
 
   function getInitialLanguage() {
@@ -191,22 +44,16 @@
       return fromStorage;
     }
 
-    const fromBrowser = (navigator.language || SOURCE_LANG).toLowerCase();
-    if (fromBrowser.startsWith("zh")) {
+    const browserLanguage = (navigator.language || "en").toLowerCase();
+    if (browserLanguage.startsWith("zh")) {
       return "zh-CN";
     }
-    if (fromBrowser.startsWith("fr")) {
-      return "fr";
-    }
-    if (fromBrowser.startsWith("ja")) {
-      return "ja";
-    }
-    return SOURCE_LANG;
+    return "en";
   }
 
   function setLanguageInUrl(language) {
     const url = new URL(window.location.href);
-    if (language === SOURCE_LANG) {
+    if (language === "en") {
       url.searchParams.delete("lang");
     } else {
       url.searchParams.set("lang", language);
@@ -214,89 +61,176 @@
     window.history.replaceState({}, "", url.toString());
   }
 
-  async function applyLanguage(language) {
-    document.documentElement.lang = language;
-    const nodes = collectTranslatableNodes();
+  async function applyLanguage(targetLanguage) {
+    document.documentElement.lang = targetLanguage;
 
-    if (language === SOURCE_LANG) {
-      nodes.forEach((node) => {
-        restoreOriginal(node);
-      });
-      return;
-    }
+    const textTargets = collectTextNodeTargets();
+    const attrTargets = collectAttributeTargets();
+    const allTargets = [...textTargets, ...attrTargets];
 
-    for (const node of nodes) {
-      const original = getOriginal(node);
+    for (const target of allTargets) {
+      const sourceLanguage = getSourceLanguage(target.node);
+      if (!SUPPORTED_LANGUAGES.includes(sourceLanguage)) {
+        continue;
+      }
+
+      const original = getOriginal(target);
+      if (target.type === "text") {
+        const parts = splitTextParts(original);
+        if (!parts.core || isProbablyNonTranslatable(parts.core)) {
+          continue;
+        }
+
+        if (sourceLanguage === targetLanguage) {
+          applyValue(target, parts.core);
+          continue;
+        }
+
+        const translated = await translateText(parts.core, sourceLanguage, targetLanguage);
+        applyValue(target, translated || parts.core);
+        continue;
+      }
+
       if (!original || isProbablyNonTranslatable(original)) {
         continue;
       }
 
-      const translated = await translateText(original, language);
-      applyTranslated(node, translated || original);
+      if (sourceLanguage === targetLanguage) {
+        applyValue(target, original);
+        continue;
+      }
+
+      const translated = await translateText(original, sourceLanguage, targetLanguage);
+      applyValue(target, translated || original);
     }
   }
 
-  function collectTranslatableNodes() {
-    const allNodes = Array.from(document.querySelectorAll(shouldTranslateSelector));
-    return allNodes.filter((node) => {
-      if (!(node instanceof HTMLElement)) {
-        return node.tagName === "TITLE" || node.tagName === "META";
-      }
+  function collectTextNodeTargets() {
+    const targets = [];
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let current = walker.nextNode();
 
-      if (node.closest("[data-no-translate]")) {
-        return false;
+    while (current) {
+      const parent = current.parentElement;
+      if (
+        parent &&
+        !parent.closest("[data-no-translate]") &&
+        parent.tagName !== "SCRIPT" &&
+        parent.tagName !== "STYLE" &&
+        parent.tagName !== "NOSCRIPT" &&
+        parent.tagName !== "TEMPLATE" &&
+        !parent.isContentEditable
+      ) {
+        targets.push({
+          type: "text",
+          node: current,
+          key: "text",
+        });
       }
-      if (node.classList.contains("brand")) {
-        return false;
-      }
-      if (node.hasAttribute("data-no-translate")) {
-        return false;
-      }
-      return true;
-    });
-  }
-
-  function getOriginal(node) {
-    const attrValue = getNodeText(node);
-    if (!node.dataset) {
-      return attrValue;
+      current = walker.nextNode();
     }
 
-    if (!node.dataset.i18nOriginal) {
-      node.dataset.i18nOriginal = attrValue;
+    const titleNode = document.querySelector("title");
+    if (titleNode) {
+      targets.push({
+        type: "title",
+        node: titleNode,
+        key: "title",
+      });
     }
-    return node.dataset.i18nOriginal;
+
+    return targets;
   }
 
-  function restoreOriginal(node) {
-    const original = getOriginal(node);
-    applyTranslated(node, original);
+  function collectAttributeTargets() {
+    return Array.from(document.querySelectorAll(ATTR_SELECTOR))
+      .filter((node) => !node.closest("[data-no-translate]"))
+      .flatMap((node) =>
+        ATTRIBUTE_NAMES.filter((attributeName) => node.hasAttribute(attributeName)).map(
+          (attributeName) => ({
+            type: "attribute",
+            node,
+            key: attributeName,
+          })
+        )
+      );
   }
 
-  function applyTranslated(node, value) {
-    if (node.tagName === "TITLE") {
-      node.textContent = value;
+  function getSourceLanguage(node) {
+    const sourceElement = node instanceof Element ? node : node.parentElement;
+    const closest = sourceElement ? sourceElement.closest("[data-source-lang]") : null;
+    const declared =
+      (closest && closest.getAttribute("data-source-lang")) ||
+      document.documentElement.getAttribute("data-source-lang") ||
+      "en";
+    return normalizeLanguage(declared);
+  }
+
+  function getOriginal(target) {
+    if (target.type === "text") {
+      const node = target.node;
+      const original = textOriginalMap.get(node);
+      if (typeof original === "string") {
+        return original;
+      }
+      const current = node.textContent || "";
+      textOriginalMap.set(node, current);
+      return current;
+    }
+
+    const node = target.node;
+    const key = target.key;
+    const current = readValue(target);
+    const existing = attrOriginalMap.get(node) || {};
+    if (typeof existing[key] === "string") {
+      return existing[key];
+    }
+
+    existing[key] = current;
+    attrOriginalMap.set(node, existing);
+    return current;
+  }
+
+  function readValue(target) {
+    if (target.type === "text") {
+      return target.node.textContent || "";
+    }
+    if (target.type === "title") {
+      return target.node.textContent || "";
+    }
+    if (target.key === "content") {
+      return target.node.getAttribute("content") || "";
+    }
+    return target.node.getAttribute(target.key) || "";
+  }
+
+  function applyValue(target, translated) {
+    if (target.type === "text") {
+      const original = getOriginal(target);
+      const parts = splitTextParts(original);
+      target.node.textContent = `${parts.leading}${translated}${parts.trailing}`;
       return;
     }
 
-    if (node.tagName === "META") {
-      node.setAttribute("content", value);
+    if (target.type === "title") {
+      target.node.textContent = translated;
       return;
     }
 
-    node.textContent = value;
+    if (target.key === "content") {
+      target.node.setAttribute("content", translated);
+      return;
+    }
+
+    target.node.setAttribute(target.key, translated);
   }
 
-  function getNodeText(node) {
-    if (node.tagName === "TITLE") {
-      return node.textContent || "";
+  function normalizeLanguage(value) {
+    const lower = String(value || "en").toLowerCase();
+    if (lower.startsWith("zh")) {
+      return "zh-CN";
     }
-
-    if (node.tagName === "META") {
-      return node.getAttribute("content") || "";
-    }
-
-    return node.textContent || "";
+    return "en";
   }
 
   function isProbablyNonTranslatable(value) {
@@ -308,6 +242,8 @@
     if (
       trimmed.startsWith("http://") ||
       trimmed.startsWith("https://") ||
+      trimmed.startsWith("./") ||
+      trimmed.startsWith("../") ||
       trimmed.includes("@") ||
       /^[\d\s/:\-.]+$/.test(trimmed)
     ) {
@@ -317,73 +253,98 @@
     return false;
   }
 
-  async function translateText(text, targetLanguage) {
-    const fallbackValue = fromFallbackDictionary(text, targetLanguage);
-    if (fallbackValue) {
-      return fallbackValue;
+  function splitTextParts(value) {
+    const match = String(value || "").match(/^(\s*)([\s\S]*?)(\s*)$/);
+    if (!match) {
+      return { leading: "", core: String(value || ""), trailing: "" };
+    }
+    return {
+      leading: match[1],
+      core: match[2],
+      trailing: match[3],
+    };
+  }
+
+  async function translateText(text, sourceLanguage, targetLanguage) {
+    const normalizedSource = normalizeLanguage(sourceLanguage);
+    const normalizedTarget = normalizeLanguage(targetLanguage);
+    if (normalizedSource === normalizedTarget) {
+      return text;
     }
 
     const cache = loadCache();
-    const cacheKey = `${SOURCE_LANG}::${targetLanguage}::${text}`;
-    const cached = cache[cacheKey];
-    if (cached) {
-      return cached;
+    const cacheKey = `${normalizedSource}::${normalizedTarget}::${text}`;
+    if (cache[cacheKey]) {
+      return cache[cacheKey];
     }
 
+    const pendingKey = cacheKey;
+    if (pendingMap.has(pendingKey)) {
+      return pendingMap.get(pendingKey);
+    }
+
+    const pending = doTranslate(text, normalizedSource, normalizedTarget)
+      .then((translated) => {
+        cache[cacheKey] = translated;
+        saveCache(cache);
+        pendingMap.delete(pendingKey);
+        return translated;
+      })
+      .catch(() => {
+        pendingMap.delete(pendingKey);
+        return text;
+      });
+
+    pendingMap.set(pendingKey, pending);
+    return pending;
+  }
+
+  async function doTranslate(text, sourceLanguage, targetLanguage) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 9000);
+
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 9000);
-      const targetCode = normalizeTargetLanguage(targetLanguage);
       const response = await fetch(TRANSLATION_ENDPOINT, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           q: text,
-          source: SOURCE_LANG,
-          target: targetCode,
+          source: toApiLanguage(sourceLanguage),
+          target: toApiLanguage(targetLanguage),
           format: "text",
         }),
         signal: controller.signal,
       });
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
-        return fallbackValue || text;
+        return fallbackWhenUnavailable(text);
       }
 
       const data = await response.json();
-      const translated =
-        typeof data.translatedText === "string" && data.translatedText.trim()
-          ? data.translatedText.trim()
-          : text;
-
-      cache[cacheKey] = translated;
-      saveCache(cache);
-      return translated;
+      const translated = String(data.translatedText || "").trim();
+      return translated || text;
     } catch (_error) {
-      return fallbackValue || text;
+      return fallbackWhenUnavailable(text);
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
-  function fromFallbackDictionary(text, targetLanguage) {
-    const key = text.trim();
-    if (!key) {
-      return "";
-    }
-    const map = fallbackDictionary[key];
-    if (!map) {
-      return "";
-    }
-    return map[targetLanguage] || "";
-  }
-
-  function normalizeTargetLanguage(language) {
+  function toApiLanguage(language) {
     if (language === "zh-CN") {
       return "zh";
     }
-    return language;
+    return "en";
+  }
+
+  function fallbackWhenUnavailable(text) {
+    if (!warnedUnavailable) {
+      warnedUnavailable = true;
+      console.warn(
+        "[i18n] Translation endpoint unavailable. Using source text fallback. Configure window.TRANSLATION_ENDPOINT for reliability."
+      );
+    }
+    return text;
   }
 
   function loadCache() {
@@ -391,7 +352,6 @@
     if (!raw) {
       return {};
     }
-
     try {
       const parsed = JSON.parse(raw);
       if (parsed && typeof parsed === "object") {

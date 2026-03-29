@@ -35,200 +35,69 @@ if (revealNodes.length > 0) {
   revealNodes.forEach((node) => observer.observe(node));
 }
 
-const blogForm = document.querySelector("#blog-form");
 const blogList = document.querySelector("#blog-list");
-const storageKey = "sg_personal_site_blog_cards";
-const pageLang = document.documentElement.lang || "en";
-const normalizedLang = pageLang.toLowerCase();
-
-const uiLabels = {
-  en: {
-    emptyText: "No cards yet. Add your first thought above.",
-    removeLabel: "Remove",
-  },
-  "zh-cn": {
-    emptyText: "还没有卡片。先写下你的第一条想法。",
-    removeLabel: "删除",
-  },
-  fr: {
-    emptyText: "Aucune carte pour le moment. Ajoutez votre premiere idee.",
-    removeLabel: "Supprimer",
-  },
-  ja: {
-    emptyText: "まだカードがありません。最初のメモを追加してください。",
-    removeLabel: "削除",
-  },
-};
-
-const defaultCardsByLang = {
-  en: [
-    {
-      title: "First week of building this site",
-      excerpt: "Set up a clean structure for Pages deployment and made the layout easier to scale.",
-      tags: "website, devlog",
-      date: "2026-03-28",
-    },
-  ],
-  "zh-cn": [
-    {
-      title: "个人网站第一周",
-      excerpt: "完成了 GitHub Pages 基础框架，并建立了后续扩展的页面结构。",
-      tags: "网站, 开发记录",
-      date: "2026-03-28",
-    },
-  ],
-  fr: [
-    {
-      title: "Premiere semaine sur ce site",
-      excerpt: "J'ai pose une base claire pour le deploiement GitHub Pages et les futures evolutions.",
-      tags: "site web, journal dev",
-      date: "2026-03-28",
-    },
-  ],
-  ja: [
-    {
-      title: "個人サイトの最初の1週間",
-      excerpt: "GitHub Pages 向けの土台を作り、今後の拡張がしやすい構成にしました。",
-      tags: "webサイト, 開発ログ",
-      date: "2026-03-28",
-    },
-  ],
-};
-
-const defaultLabels = uiLabels.en;
-const activeLabels = uiLabels[normalizedLang] || defaultLabels;
-const emptyText = activeLabels.emptyText;
-const removeLabel = activeLabels.removeLabel;
-
-const defaultEnglishCards = defaultCardsByLang.en;
-const defaultChineseCards = defaultCardsByLang["zh-cn"];
-const defaultFrenchCards = defaultCardsByLang.fr;
-const defaultJapaneseCards = defaultCardsByLang.ja;
-
-const defaultCards = {
-  en: defaultEnglishCards,
-  "zh-cn": defaultChineseCards,
-  fr: defaultFrenchCards,
-  ja: defaultJapaneseCards,
-};
-
-const languageBucket = defaultCards[normalizedLang] ? normalizedLang : "en";
-const fallbackCards = defaultCards[languageBucket];
-
-const defaultCard = [
-  {
-    title: "First week of building this site",
-    excerpt: "Set up a clean structure for Pages deployment and made the layout easier to scale.",
-    tags: "website, devlog",
-    date: "2026-03-28",
-  },
-];
-
-if (blogForm && blogList) {
-  const storageKeyByLang = `${storageKey}_${languageBucket}`;
-  const initialCards = fallbackCards || defaultCard;
-  let cards = loadCards(storageKeyByLang, initialCards);
-
-  renderCards(cards);
-
-  blogForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const formData = new FormData(blogForm);
-    const title = String(formData.get("title") || "").trim();
-    const excerpt = String(formData.get("excerpt") || "").trim();
-    const tags = String(formData.get("tags") || "").trim();
-
-    if (!title || !excerpt) {
-      return;
-    }
-
-    const entry = {
-      title,
-      excerpt,
-      tags,
-      date: new Date().toISOString().slice(0, 10),
-    };
-
-    cards = [entry, ...cards];
-    saveCards(storageKeyByLang, cards);
-    renderCards(cards);
-    blogForm.reset();
-  });
-
-  blogList.addEventListener("click", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLElement)) {
-      return;
-    }
-
-    if (!target.matches("[data-remove-index]")) {
-      return;
-    }
-
-    const indexValue = target.getAttribute("data-remove-index");
-    if (indexValue === null) {
-      return;
-    }
-
-    const removeIndex = Number.parseInt(indexValue, 10);
-    if (Number.isNaN(removeIndex)) {
-      return;
-    }
-
-    cards = cards.filter((_, index) => index !== removeIndex);
-    saveCards(storageKeyByLang, cards);
-    renderCards(cards);
-  });
-
-  function renderCards(currentCards) {
-    if (currentCards.length === 0) {
-      blogList.innerHTML = `<li class="panel blog-empty">${emptyText}</li>`;
-      return;
-    }
-
-    blogList.innerHTML = currentCards
-      .map((card, index) => {
-        const safeTitle = escapeHtml(card.title || "");
-        const safeExcerpt = escapeHtml(card.excerpt || "");
-        const safeTags = escapeHtml(card.tags || "");
-        const safeDate = escapeHtml(card.date || "");
-
-        return `
-          <li class="panel reveal is-visible blog-card">
-            <p class="eyebrow">${safeDate}</p>
-            <h3>${safeTitle}</h3>
-            <p>${safeExcerpt}</p>
-            <p class="blog-meta">${safeTags}</p>
-            <button class="blog-remove" type="button" data-remove-index="${index}">
-              ${removeLabel}
-            </button>
-          </li>
-        `;
-      })
-      .join("");
-  }
+if (blogList) {
+  loadBlogCards(blogList);
 }
 
-function loadCards(key, fallback) {
-  const raw = localStorage.getItem(key);
-  if (!raw) {
-    return fallback;
-  }
+async function loadBlogCards(targetNode) {
+  const sourcePath = targetNode.getAttribute("data-source") || "../data/blog_cards.json";
 
   try {
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) {
-      return parsed;
+    const response = await fetch(sourcePath);
+    if (!response.ok) {
+      renderBlogError(targetNode, "Unable to load blog cards.");
+      return;
+    }
+
+    const data = await response.json();
+    const cards = Array.isArray(data.cards) ? data.cards : [];
+    renderBlogCards(targetNode, cards);
+
+    if (typeof window.__applySiteLanguage === "function") {
+      await window.__applySiteLanguage();
     }
   } catch (_error) {
-    return fallback;
+    renderBlogError(targetNode, "Unable to load blog cards.");
   }
-
-  return fallback;
 }
 
-function saveCards(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
+function renderBlogCards(targetNode, cards) {
+  if (cards.length === 0) {
+    targetNode.innerHTML = '<li class="panel blog-empty">No cards available yet.</li>';
+    return;
+  }
+
+  targetNode.innerHTML = cards
+    .map((card) => {
+      const safeDate = escapeHtml(card.date || "");
+      const safeTitle = escapeHtml(card.title || "");
+      const safeExcerpt = escapeHtml(card.excerpt || "");
+      const safeTags = escapeHtml(card.tags || "");
+      const sourceLang = normalizeSourceLanguage(card.source_lang);
+
+      return `
+        <li class="panel reveal is-visible blog-card" data-source-lang="${sourceLang}">
+          <p class="eyebrow">${safeDate}</p>
+          <h3>${safeTitle}</h3>
+          <p>${safeExcerpt}</p>
+          <p class="blog-meta">${safeTags}</p>
+        </li>
+      `;
+    })
+    .join("");
+}
+
+function renderBlogError(targetNode, message) {
+  targetNode.innerHTML = `<li class="panel blog-empty">${escapeHtml(message)}</li>`;
+}
+
+function normalizeSourceLanguage(value) {
+  const lower = String(value || "en").toLowerCase();
+  if (lower.startsWith("zh")) {
+    return "zh-CN";
+  }
+  return "en";
 }
 
 function escapeHtml(value) {

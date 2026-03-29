@@ -2,16 +2,16 @@
 
 ## Scope
 
-This update replaced the duplicated multilingual page stack with a single-source, runtime translation architecture.
+This update refined the multilingual architecture to focus on **English + Chinese only** and changed blog content workflow from browser editing to repository-managed data.
 
 Main goal:
-- Keep one English content source.
-- Translate at runtime for Chinese, French, and Japanese.
-- Avoid maintaining multiple static page trees (`zh/`, `fr/`, `ja/`).
+- Support full bidirectional translation between English and Chinese.
+- Allow content authoring in either language.
+- Remove on-page blog card creation and manage content through the repo.
 
 ## What Changed
 
-1. Added runtime translation layer:
+1. Upgraded runtime translation layer:
 - `assets/js/i18n.js`
 - Language selector supported on all core pages:
   - `index.html`
@@ -20,15 +20,19 @@ Main goal:
   - `pages/blog.html`
   - `pages/contact.html`
 
-2. Translation model integration strategy:
+2. Translation strategy:
 - Uses a LibreTranslate-style HTTP endpoint by default.
 - Reads from `window.TRANSLATION_ENDPOINT` if provided.
+- Supports only `en` and `zh-CN`.
+- Translates full content (text nodes + key attributes such as `placeholder`, `title`, `aria-label`, and meta description).
+- Supports mixed source language content through `data-source-lang`.
 - Caches translated strings in `localStorage`.
-- Persists language preference in `localStorage`.
 
-3. Resilience improvements:
-- Added built-in fallback dictionary for common UI strings.
-- If translation endpoint is unavailable, core navigation and UI still translate.
+3. Blog workflow refactor:
+- Added `data/blog_cards.json` as canonical blog card source.
+- Added `scripts/add_blog_card.py` helper to append cards from repository workflow.
+- Removed browser-side form creation flow.
+- Blog cards now store `source_lang` (`en` or `zh-CN`) and translate to the selected display language at runtime.
 
 4. Content architecture changes:
 - Removed duplicated Chinese static pages:
@@ -38,10 +42,6 @@ Main goal:
   - `zh/pages/blog.html`
   - `zh/pages/contact.html`
 - Updated sitemap to keep only canonical single-source URLs.
-
-5. Blog language behavior:
-- Blog cards are still localStorage-based.
-- Storage now buckets by selected language (`en`, `zh-CN`, `fr`, `ja`).
 
 ## Test Results
 
@@ -68,15 +68,15 @@ Result:
 
 Interpretation:
 - DNS/network resolution for that host is unavailable in this environment.
-- Site remains functional due to fallback dictionary and source-text fallback behavior.
+- Site remains functional via source-text fallback.
 - For production reliability, provide your own translation endpoint.
 
 ## Risk Notes
 
-- Runtime machine translation quality can vary by provider and sentence complexity.
-- Network-based translation introduces latency on first render per uncached string.
-- For predictable results and uptime, point `window.TRANSLATION_ENDPOINT` to a controlled backend translation service.
+- Runtime machine translation quality depends on the provider.
+- Network-based translation adds latency on first render per uncached string.
+- For predictable quality and uptime, point `window.TRANSLATION_ENDPOINT` to a controlled backend translation service.
 
 ## Recommended Next Step
 
-- Add a first-party translation proxy endpoint (serverless function or API route) to stabilize reliability and control model/provider quality.
+- Add a first-party translation proxy endpoint (serverless/API route) for stable reliability and quality control.

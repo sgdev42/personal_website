@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-source-lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,8 +22,6 @@
         <select id="language-switch" class="language-switch" data-no-translate>
           <option value="en">EN</option>
           <option value="zh-CN">中文</option>
-          <option value="fr">FR</option>
-          <option value="ja">日本語</option>
         </select>
         <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
           Menu
@@ -43,31 +41,30 @@
         <p class="eyebrow">Blog</p>
         <h1>Thought Cards</h1>
         <p>
-          Add short notes whenever you want to capture an idea, lesson, or
-          update. Cards are saved in your browser.
+          Blog cards are managed from this repository and automatically rendered
+          here. Add content via the repo workflow, then commit and deploy.
         </p>
       </section>
 
       <section class="blog-layout reveal">
         <article class="panel">
-          <h2>Create a Card</h2>
-          <form id="blog-form" class="blog-controls">
-            <label for="blog-title">Title</label>
-            <input id="blog-title" name="title" type="text" maxlength="80" required />
-
-            <label for="blog-excerpt">Thought</label>
-            <textarea id="blog-excerpt" name="excerpt" maxlength="400" required></textarea>
-
-            <label for="blog-tags">Tags (comma separated)</label>
-            <input id="blog-tags" name="tags" type="text" maxlength="120" />
-
-            <button class="button" type="submit">Add Card</button>
-          </form>
+          <h2>How to Add a Card</h2>
+          <p>Run the helper command from the repository root:</p>
+          <pre class="code-block" data-no-translate><code>python3 scripts/add_blog_card.py \
+  --lang en \
+  --title "Post title" \
+  --excerpt "Main thought to share" \
+  --tags "tag1,tag2"</code></pre>
+          <p>You can also use <code>--lang zh-CN</code> to author directly in Chinese.</p>
         </article>
 
         <article class="panel">
           <h2>Cards</h2>
-          <ul id="blog-list" class="blog-list"></ul>
+          <ul
+            id="blog-list"
+            class="blog-list"
+            data-source="../data/blog_cards.json"
+          ></ul>
         </article>
       </section>
     </main>
