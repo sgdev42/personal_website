@@ -56,6 +56,7 @@ Still recommended to customize:
 - Language selection is persisted per visitor.
 - No duplicated `zh/` page tree is needed.
 - Element-level source language is supported via `data-source-lang` (optional override).
+- Includes built-in EN↔ZH translation memory for current site copy so language switch still works when external translation API is unavailable.
 
 Current language targets:
 - `en`

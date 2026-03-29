@@ -17,6 +17,66 @@
   const attrOriginalMap = new WeakMap();
   const pendingMap = new Map();
   let warnedUnavailable = false;
+  const MANUAL_TRANSLATIONS = [
+    ["Personal website for sharing projects, writing, and contact information.", "用于分享项目、写作与联系方式的个人网站。"],
+    ["Simon Guo | Personal Website", "Simon Guo | 个人网站"],
+    ["Menu", "菜单"],
+    ["Home", "首页"],
+    ["About", "关于"],
+    ["Projects", "项目"],
+    ["Blog", "博客"],
+    ["Contact", "联系"],
+    ["Building thoughtful software and sharing what I learn along the way.", "持续构建有价值的软件，并分享一路上的学习与思考。"],
+    ["Software engineer focused on practical systems, clean implementation, and steady iteration from idea to delivery.", "软件工程师，专注于实用系统、清晰实现，以及从想法到交付的稳定迭代。"],
+    ["View Projects", "查看项目"],
+    ["View Blog", "查看博客"],
+    ["Background, technical interests, and how I approach engineering work.", "我的背景、技术兴趣，以及我如何开展工程实践。"],
+    ["Read more", "继续阅读"],
+    ["Selected work with context, technical scope, and implementation details.", "展示精选工作，包含背景、技术范围与实现细节。"],
+    ["Explore projects", "浏览项目"],
+    ["Small thought cards for notes on ideas, learnings, and experiments.", "以卡片形式记录想法、学习收获与实验过程。"],
+    ["Read blog cards", "阅读博客卡片"],
+    ["Reach out for collaboration, project discussion, or technical exchange.", "欢迎联系我进行合作、项目讨论或技术交流。"],
+    ["Get in touch", "联系我"],
+    ["Simon Guo. Built with HTML, CSS, and JavaScript.", "Simon Guo。使用 HTML、CSS 与 JavaScript 构建。"],
+    ["Learn more about Simon Guo.", "了解更多关于 Simon Guo 的信息。"],
+    ["About | Simon Guo", "关于 | Simon Guo"],
+    ["Who I Am", "我是谁"],
+    ["Engineer with a product-minded approach to building reliable and user-focused software.", "我是一名工程师，采用产品思维构建可靠且以用户为中心的软件。"],
+    ["Current Focus", "当前关注"],
+    ["Product engineering, AI-enabled workflows, and applied automation.", "产品工程、AI 增强工作流与自动化落地。"],
+    ["Core Skills", "核心技能"],
+    ["JavaScript/TypeScript, frontend systems, backend APIs, and DevOps.", "JavaScript/TypeScript、前端系统、后端 API 与 DevOps。"],
+    ["Outside Work", "工作之外"],
+    ["Writing, continuous learning, and long-form technical side projects.", "写作、持续学习，以及长期技术 side project。"],
+    ["Projects by Simon Guo.", "Simon Guo 的项目页。"],
+    ["Projects | Simon Guo", "项目 | Simon Guo"],
+    ["Selected Work", "精选工作"],
+    ["Highlights of recent work, including impact, stack, and deliverables.", "近期工作的亮点，包括影响、技术栈与交付成果。"],
+    ["Personal Website", "个人网站"],
+    ["Designed and built a responsive multi-page personal website hosted on GitHub Pages, with reusable components and automated deployment.", "设计并实现了部署在 GitHub Pages 上的响应式多页面个人网站，具备可复用组件与自动化部署流程。"],
+    ["Repo", "仓库"],
+    ["Coming Soon", "即将更新"],
+    ["Project Slot 2", "项目位 2"],
+    ["Reserved for a future featured project.", "预留给未来的重点项目。"],
+    ["In Progress", "进行中"],
+    ["Project Slot 3", "项目位 3"],
+    ["Contact Simon Guo.", "联系 Simon Guo。"],
+    ["Contact | Simon Guo", "联系 | Simon Guo"],
+    ["Let’s Build Something Useful", "一起做点有价值的事情"],
+    ["I am always open to discussing software development opportunities, technical collaboration, and creative side projects.", "我始终欢迎围绕软件开发机会、技术协作与创意 side project 的交流。"],
+    ["Email", "邮箱"],
+    ["GitHub", "GitHub"],
+    ["LinkedIn", "LinkedIn"],
+    ["Short blog cards by Simon Guo.", "Simon Guo 的短博客卡片。"],
+    ["Blog | Simon Guo", "博客 | Simon Guo"],
+    ["Thought Cards", "想法卡片"],
+    ["Blog cards are managed from this repository and automatically rendered here. Add content via the repo workflow, then commit and deploy.", "博客卡片由仓库管理，并自动渲染到这里。通过仓库流程添加内容后，提交并部署即可。"],
+    ["Latest Notes", "最新笔记"],
+    ["This page shows short notes and updates from ongoing work, learnings, and experiments.", "此页面展示来自持续工作、学习与实验的简短笔记与更新。"],
+    ["Cards", "卡片"],
+    ["No cards available yet.", "暂时还没有卡片内容。"],
+  ];
 
   const currentLanguage = getInitialLanguage();
   languageSelect.value = currentLanguage;
@@ -272,6 +332,11 @@
       return text;
     }
 
+    const manual = lookupManualTranslation(text, normalizedSource, normalizedTarget);
+    if (manual) {
+      return manual;
+    }
+
     const cache = loadCache();
     const cacheKey = `${normalizedSource}::${normalizedTarget}::${text}`;
     if (cache[cacheKey]) {
@@ -345,6 +410,36 @@
       );
     }
     return text;
+  }
+
+  function lookupManualTranslation(text, sourceLanguage, targetLanguage) {
+    const normalizedText = normalizeWhitespace(text);
+    if (!normalizedText) {
+      return "";
+    }
+
+    for (const pair of MANUAL_TRANSLATIONS) {
+      const en = normalizeWhitespace(pair[0]);
+      const zh = normalizeWhitespace(pair[1]);
+      if (sourceLanguage === "en" && targetLanguage === "zh-CN" && normalizedText === en) {
+        return pair[1];
+      }
+      if (
+        sourceLanguage === "zh-CN" &&
+        targetLanguage === "en" &&
+        normalizedText === zh
+      ) {
+        return pair[0];
+      }
+    }
+
+    return "";
+  }
+
+  function normalizeWhitespace(value) {
+    return String(value || "")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 
   function loadCache() {
