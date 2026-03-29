@@ -5,9 +5,11 @@ Personal website for Simon Guo, deployed with GitHub Pages.
 ## What this includes
 
 - Multi-page site: Home, About, Projects, Blog, Contact
-- Chinese mirror pages under `zh/` with EN/中文 page switching
+- Single English source pages with runtime language switching
+- Translation-ready support for English, Chinese, French, and Japanese
 - Futuristic, minimal visual style with subtle motion accents
 - Lightweight JavaScript for mobile menu, reveal effects, footer year, and blog cards
+- Runtime translation engine with cache to avoid maintaining duplicated page trees
 - 404 page, `robots.txt`, `sitemap.xml`, `.nojekyll`
 - GitHub Actions workflow to deploy to GitHub Pages on push to `main`
 
@@ -18,19 +20,14 @@ Personal website for Simon Guo, deployed with GitHub Pages.
 ├── .github/workflows/deploy.yml
 ├── assets/
 │   ├── css/styles.css
-│   └── js/main.js
+│   └── js/
+│       ├── i18n.js
+│       └── main.js
 ├── pages/
 │   ├── about.html
 │   ├── blog.html
 │   ├── contact.html
 │   └── projects.html
-├── zh/
-│   ├── index.html
-│   └── pages/
-│       ├── about.html
-│       ├── blog.html
-│       ├── contact.html
-│       └── projects.html
 ├── 404.html
 ├── index.html
 ├── robots.txt
@@ -46,15 +43,54 @@ Already configured:
 - GitHub profile link configured to `https://github.com/sgdev42`
 
 Still recommended to customize:
-1. Replace `Coming Soon` project slots in `pages/projects.html` and `zh/pages/projects.html` with real project details later.
+1. Replace `Coming Soon` project slots in `pages/projects.html` with real project details later.
 2. Refine hero/about copy in `index.html` and `pages/about.html` with your final bio and focus areas.
-3. Keep EN and zh content synchronized when you update text.
+3. If you want more accurate translations, point `window.TRANSLATION_ENDPOINT` to your own translation service.
+
+## Translation architecture
+
+- Pages are authored once in English.
+- `assets/js/i18n.js` translates visible text at runtime and caches translations in `localStorage`.
+- Language selection is persisted per visitor.
+- No duplicated `zh/` page tree is needed anymore.
+- Includes a fallback dictionary for common UI labels when translation API is unreachable.
+
+Current language targets:
+- `en` (source)
+- `zh-CN`
+- `fr`
+- `ja`
+
+Optional custom translation endpoint:
+
+```html
+<script>
+  window.TRANSLATION_ENDPOINT = "https://your-translation-service/translate";
+</script>
+```
+
+Expected endpoint contract (LibreTranslate-style):
+- POST JSON: `{ "q": "...", "source": "en", "target": "fr", "format": "text" }`
+- Response JSON: `{ "translatedText": "..." }`
 
 ## Blog cards
 
 - Blog cards are created from `pages/blog.html` and saved to browser `localStorage`.
-- English and Chinese blog cards are stored separately.
+- Cards are stored separately by selected language.
 - Cards are client-side only (per browser/device); they are not synced to GitHub automatically.
+
+## Validation and analysis
+
+- Detailed change log and test summary:
+  - `CHANGE_ANALYSIS_2026-03-29.md`
+
+Checks run for this update:
+- Local link and asset integrity across all HTML pages.
+- i18n script + language switch wiring on all core pages.
+- Translation endpoint reachability probe (environment-level).
+
+Note:
+- If your selected translation endpoint is unavailable, the site gracefully falls back to source English text plus dictionary-based UI translations.
 
 ## Deploy with GitHub Pages
 

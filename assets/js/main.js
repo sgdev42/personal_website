@@ -39,13 +39,83 @@ const blogForm = document.querySelector("#blog-form");
 const blogList = document.querySelector("#blog-list");
 const storageKey = "sg_personal_site_blog_cards";
 const pageLang = document.documentElement.lang || "en";
-const isChinesePage = pageLang.startsWith("zh");
-const emptyText = isChinesePage
-  ? "还没有卡片。先写下你的第一条想法。"
-  : "No cards yet. Add your first thought above.";
-const removeLabel = isChinesePage ? "删除" : "Remove";
+const normalizedLang = pageLang.toLowerCase();
 
-const defaultEnglishCards = [
+const uiLabels = {
+  en: {
+    emptyText: "No cards yet. Add your first thought above.",
+    removeLabel: "Remove",
+  },
+  "zh-cn": {
+    emptyText: "还没有卡片。先写下你的第一条想法。",
+    removeLabel: "删除",
+  },
+  fr: {
+    emptyText: "Aucune carte pour le moment. Ajoutez votre premiere idee.",
+    removeLabel: "Supprimer",
+  },
+  ja: {
+    emptyText: "まだカードがありません。最初のメモを追加してください。",
+    removeLabel: "削除",
+  },
+};
+
+const defaultCardsByLang = {
+  en: [
+    {
+      title: "First week of building this site",
+      excerpt: "Set up a clean structure for Pages deployment and made the layout easier to scale.",
+      tags: "website, devlog",
+      date: "2026-03-28",
+    },
+  ],
+  "zh-cn": [
+    {
+      title: "个人网站第一周",
+      excerpt: "完成了 GitHub Pages 基础框架，并建立了后续扩展的页面结构。",
+      tags: "网站, 开发记录",
+      date: "2026-03-28",
+    },
+  ],
+  fr: [
+    {
+      title: "Premiere semaine sur ce site",
+      excerpt: "J'ai pose une base claire pour le deploiement GitHub Pages et les futures evolutions.",
+      tags: "site web, journal dev",
+      date: "2026-03-28",
+    },
+  ],
+  ja: [
+    {
+      title: "個人サイトの最初の1週間",
+      excerpt: "GitHub Pages 向けの土台を作り、今後の拡張がしやすい構成にしました。",
+      tags: "webサイト, 開発ログ",
+      date: "2026-03-28",
+    },
+  ],
+};
+
+const defaultLabels = uiLabels.en;
+const activeLabels = uiLabels[normalizedLang] || defaultLabels;
+const emptyText = activeLabels.emptyText;
+const removeLabel = activeLabels.removeLabel;
+
+const defaultEnglishCards = defaultCardsByLang.en;
+const defaultChineseCards = defaultCardsByLang["zh-cn"];
+const defaultFrenchCards = defaultCardsByLang.fr;
+const defaultJapaneseCards = defaultCardsByLang.ja;
+
+const defaultCards = {
+  en: defaultEnglishCards,
+  "zh-cn": defaultChineseCards,
+  fr: defaultFrenchCards,
+  ja: defaultJapaneseCards,
+};
+
+const languageBucket = defaultCards[normalizedLang] ? normalizedLang : "en";
+const fallbackCards = defaultCards[languageBucket];
+
+const defaultCard = [
   {
     title: "First week of building this site",
     excerpt: "Set up a clean structure for Pages deployment and made the layout easier to scale.",
@@ -54,18 +124,9 @@ const defaultEnglishCards = [
   },
 ];
 
-const defaultChineseCards = [
-  {
-    title: "个人网站第一周",
-    excerpt: "完成了 GitHub Pages 基础框架，并建立了后续扩展的页面结构。",
-    tags: "网站, 开发记录",
-    date: "2026-03-28",
-  },
-];
-
 if (blogForm && blogList) {
-  const storageKeyByLang = `${storageKey}_${isChinesePage ? "zh" : "en"}`;
-  const initialCards = isChinesePage ? defaultChineseCards : defaultEnglishCards;
+  const storageKeyByLang = `${storageKey}_${languageBucket}`;
+  const initialCards = fallbackCards || defaultCard;
   let cards = loadCards(storageKeyByLang, initialCards);
 
   renderCards(cards);
