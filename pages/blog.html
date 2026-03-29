@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Contact Simon Guo." />
-    <title>Contact | Simon Guo</title>
+    <meta name="description" content="Short blog cards by Simon Guo." />
+    <title>Blog | Simon Guo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -18,7 +18,7 @@
     <header class="site-header">
       <a class="brand" href="../index.html">SG</a>
       <div class="header-actions">
-        <a class="lang-switch" href="../zh/pages/contact.html">中文</a>
+        <a class="lang-switch" href="../zh/pages/blog.html">中文</a>
         <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
           Menu
         </button>
@@ -26,42 +26,42 @@
           <a href="../index.html">Home</a>
           <a href="./about.html">About</a>
           <a href="./projects.html">Projects</a>
-          <a href="./blog.html">Blog</a>
-          <a href="./contact.html" aria-current="page">Contact</a>
+          <a href="./blog.html" aria-current="page">Blog</a>
+          <a href="./contact.html">Contact</a>
         </nav>
       </div>
     </header>
 
     <main>
       <section class="panel reveal">
-        <p class="eyebrow">Contact</p>
-        <h1>Let’s Build Something Useful</h1>
+        <p class="eyebrow">Blog</p>
+        <h1>Thought Cards</h1>
         <p>
-          I am always open to discussing software development opportunities,
-          technical collaboration, and creative side projects.
+          Add short notes whenever you want to capture an idea, lesson, or
+          update. Cards are saved in your browser.
         </p>
       </section>
 
-      <section class="grid reveal">
+      <section class="blog-layout reveal">
         <article class="panel">
-          <h2>Email</h2>
-          <p><a class="text-link" href="mailto:simonguo2021@outlook.com">simonguo2021@outlook.com</a></p>
+          <h2>Create a Card</h2>
+          <form id="blog-form" class="blog-controls">
+            <label for="blog-title">Title</label>
+            <input id="blog-title" name="title" type="text" maxlength="80" required />
+
+            <label for="blog-excerpt">Thought</label>
+            <textarea id="blog-excerpt" name="excerpt" maxlength="400" required></textarea>
+
+            <label for="blog-tags">Tags (comma separated)</label>
+            <input id="blog-tags" name="tags" type="text" maxlength="120" />
+
+            <button class="button" type="submit">Add Card</button>
+          </form>
         </article>
+
         <article class="panel">
-          <h2>GitHub</h2>
-          <p>
-            <a class="text-link" href="https://github.com/sgdev42" target="_blank" rel="noreferrer">
-              github.com/sgdev42
-            </a>
-          </p>
-        </article>
-        <article class="panel">
-          <h2>LinkedIn</h2>
-          <p>
-            <a class="text-link" href="https://www.linkedin.com/in/yguo97/" target="_blank" rel="noreferrer">
-              linkedin.com/in/yguo97
-            </a>
-          </p>
+          <h2>Cards</h2>
+          <ul id="blog-list" class="blog-list"></ul>
         </article>
       </section>
     </main>
