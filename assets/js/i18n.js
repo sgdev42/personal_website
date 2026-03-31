@@ -86,6 +86,14 @@
     ["No cards available yet.", "暂时还没有卡片内容。"],
     ["Contact Me", "联系我"],
     ["View Resume", "查看简历"],
+    ["Senior Data Scientist with a Builder’s Mindset", "具备开发者思维的资深数据科学家"],
+    ["I build practical data and AI tools that remove friction, amplify human creativity, and help people focus on what matters most.", "我构建务实的数据与 AI 工具，减少阻力、放大人的创造力，并让人们专注于真正重要的事情。"],
+    ["I am a senior data scientist with a development toolbox and product instinct. I bridge analysis, engineering, and automation to turn ambiguous ideas into reliable tools teams can actually use.", "我是一名拥有开发工具箱与产品直觉的资深数据科学家。我将分析、工程与自动化连接起来，把模糊想法落地为团队真正可用的可靠工具。"],
+    ["AI-enabled workflows, decision tooling, and human-in-the-loop automation.", "AI 驱动工作流、决策工具以及人在回路的自动化。"],
+    ["Applied ML, experimentation, Python, APIs, and production-minded software development.", "应用机器学习、实验设计、Python、API 与面向生产的软件开发。"],
+    ["Building creative side tools, writing, and exploring better ways for people to work with machines.", "构建创意 side tool、写作，并探索人与机器更高效协作的方式。"],
+    ["Let’s Build Tools That Empower People", "一起打造赋能人的工具"],
+    ["If you are hiring for data science, AI, or product engineering roles, I would love to connect and discuss how I can help your team reduce hassle and unlock more creative output.", "如果你正在招聘数据科学、AI 或产品工程岗位，我很愿意沟通，探讨我如何帮助你的团队减少繁琐、释放更多创造力。"],
   ];
 
   const currentLanguage = getInitialLanguage();
