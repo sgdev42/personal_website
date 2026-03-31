@@ -12,6 +12,13 @@ if (menuToggle && siteNav) {
     menuToggle.setAttribute("aria-expanded", String(!expanded));
     siteNav.classList.toggle("is-open", !expanded);
   });
+
+  siteNav.querySelectorAll("a").forEach((anchor) => {
+    anchor.addEventListener("click", () => {
+      menuToggle.setAttribute("aria-expanded", "false");
+      siteNav.classList.remove("is-open");
+    });
+  });
 }
 
 const revealNodes = document.querySelectorAll(".reveal");
@@ -38,6 +45,49 @@ if (revealNodes.length > 0) {
 const blogList = document.querySelector("#blog-list");
 if (blogList) {
   loadBlogCards(blogList);
+}
+
+const sectionNavLinks = Array.from(
+  document.querySelectorAll('.site-nav a[href^="#"]')
+);
+if (sectionNavLinks.length > 0) {
+  const linkBySection = new Map();
+
+  sectionNavLinks.forEach((link) => {
+    const sectionId = link.getAttribute("href")?.slice(1);
+    if (!sectionId) {
+      return;
+    }
+    const sectionNode = document.getElementById(sectionId);
+    if (!sectionNode) {
+      return;
+    }
+    linkBySection.set(sectionNode, link);
+  });
+
+  const sectionObserver = new IntersectionObserver(
+    (entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+      if (!visible) {
+        return;
+      }
+
+      sectionNavLinks.forEach((link) => link.removeAttribute("aria-current"));
+      const activeLink = linkBySection.get(visible.target);
+      if (activeLink) {
+        activeLink.setAttribute("aria-current", "page");
+      }
+    },
+    {
+      threshold: [0.2, 0.4, 0.6],
+      rootMargin: "-20% 0px -55% 0px",
+    }
+  );
+
+  linkBySection.forEach((_link, sectionNode) => sectionObserver.observe(sectionNode));
 }
 
 async function loadBlogCards(targetNode) {

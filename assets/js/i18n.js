@@ -72,10 +72,13 @@
     ["Blog | Simon Guo", "博客 | Simon Guo"],
     ["Thought Cards", "想法卡片"],
     ["Blog cards are managed from this repository and automatically rendered here. Add content via the repo workflow, then commit and deploy.", "博客卡片由仓库管理，并自动渲染到这里。通过仓库流程添加内容后，提交并部署即可。"],
+    ["Blog cards are managed from this repository and automatically rendered here.", "博客卡片由仓库管理，并自动渲染到这里。"],
     ["Latest Notes", "最新笔记"],
     ["This page shows short notes and updates from ongoing work, learnings, and experiments.", "此页面展示来自持续工作、学习与实验的简短笔记与更新。"],
     ["Cards", "卡片"],
     ["No cards available yet.", "暂时还没有卡片内容。"],
+    ["Contact Me", "联系我"],
+    ["View Resume", "查看简历"],
   ];
 
   const currentLanguage = getInitialLanguage();
