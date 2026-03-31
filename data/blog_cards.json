@@ -1,6 +1,13 @@
 {
   "cards": [
     {
+      "date": "2026-03-31",
+      "source_lang": "en",
+      "title": "Project roadmap update",
+      "excerpt": "Added the eBay Seller Assistant project and queued an AI Resume Builder in backlog planning.",
+      "tags": "projects, roadmap, planning"
+    },
+    {
       "date": "2026-03-29",
       "source_lang": "en",
       "title": "Personal website architecture update",
