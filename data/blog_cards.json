@@ -1,6 +1,13 @@
 {
   "cards": [
     {
+      "date": "2026-04-04",
+      "source_lang": "en",
+      "title": "Resume Builder implementation update",
+      "excerpt": "Shipped the initial Resume Data Pool Builder implementation with schema-driven profile structure, local editor UI, and GitHub Pages deployment.",
+      "tags": "resume_builder, data-tooling, launch"
+    },
+    {
       "date": "2026-03-31",
       "source_lang": "en",
       "title": "Project roadmap update",
