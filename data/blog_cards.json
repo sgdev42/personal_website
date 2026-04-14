@@ -1,6 +1,13 @@
 {
   "cards": [
     {
+      "date": "2026-04-13",
+      "source_lang": "en",
+      "title": "Canada business dynamics analysis added",
+      "excerpt": "Added a new analytics project using Statistics Canada data to compare regional business openings, closures, and net creation between Q1 2024 and Q1 2025.",
+      "tags": "analytics, tableau, statistics-canada"
+    },
+    {
       "date": "2026-04-04",
       "source_lang": "en",
       "title": "Resume Builder implementation update",
